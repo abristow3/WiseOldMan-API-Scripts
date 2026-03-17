@@ -1,6 +1,6 @@
-# Wise Old Man SOTW Tracker
+# Wise Old Man API Scripts
 
-This project analyzes **Skill of the Week (SOTW)** competitions for a Wise Old Man group and calculates total SOTW wins per player.
+This project analyzes **Skill of the Week (SOTW)** competitions for a Wise Old Man group and calculates total SOTW wins per player, as well as **Hunt Competitions** and generates win percentage per player overall.
 
 It uses the **Wise Old Man public API** and includes built-in rate limiting and retry handling to safely respect API limits.
 
