@@ -11,7 +11,8 @@ COMPETITION_ID_TO_HUNT = {
     43599: 11,
     67778: 12,
     85479: 13,
-    100262: 14
+    100262: 14,
+    130725: 15
 }
 COMPETITION_IDS = list(COMPETITION_ID_TO_HUNT.keys())
 WINNERS = {
@@ -22,7 +23,8 @@ WINNERS = {
     43599: "google knows", # 11
     67778: "airxrs",       # 12
     85479: "frank donner", # 13
-    100262: "bigbloor"     # 14
+    100262: "bigbloor",    # 14
+    130725: "j essse"      # 15
 }
 
 RATE_LIMIT = 20
