@@ -59,6 +59,36 @@ METRICS_TO_TRACK = [
         "type": "progress_gained"
     },
     {
+        "id": "cox",
+        "total_label": "total cox",
+        "average_label": "average cox per hunt",
+        "type": "metric_sum",
+        "sources": [
+            "chambers_of_xeric",
+            "chambers_of_xeric_challenge_mode"
+        ]
+    },
+    {
+        "id": "tob",
+        "total_label": "total tob",
+        "average_label": "average tob per hunt",
+        "type": "metric_sum",
+        "sources": [
+            "theatre_of_blood",
+            "theatre_of_blood_hard_mode"
+        ]
+    },
+    {
+        "id": "toa",
+        "total_label": "total toa",
+        "average_label": "average toa per hunt",
+        "type": "metric_sum",
+        "sources": [
+            "tombs_of_amascut",
+            "tombs_of_amascut_expert"
+        ]
+    },
+    {
         "id": "raids",
         "total_label": "total raids",
         "average_label": "average raids per hunt",
@@ -138,8 +168,24 @@ def find_winner_team(details, winner_username):
     return "No Team Found"
 
 
+def get_unique_metrics(metric_defs):
+    seen = set()
+    unique = []
+    for metric_def in metric_defs:
+        if metric_def["type"] == "metric_sum":
+            key = (metric_def["type"], tuple(metric_def.get("sources", [])))
+        else:
+            key = (metric_def["type"], metric_def["id"])
+        if key in seen:
+            continue
+        seen.add(key)
+        unique.append(metric_def)
+    return unique
+
+
 def main():
     player_stats = {}
+    unique_metrics = get_unique_metrics(METRICS_TO_TRACK)
     for comp_id, comp_config in COMPETITION_CONFIGS.items():
         winner = comp_config["winner"]
         hunt_num = comp_config["hunt"]
@@ -161,7 +207,7 @@ def main():
                     "participated": 0,
                     "won_hunts": [],
                     "lost_hunts": [],
-                    "metrics": {m["id"]: 0 for m in METRICS_TO_TRACK}
+                    "metrics": {m["id"]: 0 for m in unique_metrics}
                 }
             player_stats[username]["participated"] += 1
             if team == winning_team:
@@ -171,7 +217,7 @@ def main():
                 player_stats[username]["lost_hunts"].append(hunt_num)
 
         # Fetch each progress metric separately and add to totals.
-        for metric_def in METRICS_TO_TRACK:
+        for metric_def in unique_metrics:
             if metric_def["type"] != "progress_gained":
                 continue
             if metric_def["id"] == "ehb":
@@ -190,7 +236,7 @@ def main():
 
     # Compute derived metrics such as raids from individual sources.
     for stats in player_stats.values():
-        for metric_def in METRICS_TO_TRACK:
+        for metric_def in unique_metrics:
             if metric_def["type"] != "metric_sum":
                 continue
             stats["metrics"][metric_def["id"]] = sum(
@@ -207,7 +253,7 @@ def main():
             stats["wins"],
             stats["participated"]
         ]
-        for metric_def in METRICS_TO_TRACK:
+        for metric_def in unique_metrics:
             total = stats["metrics"][metric_def["id"]]
             average = total / stats["participated"] if stats["participated"] > 0 else 0
             row.append(f"{total:.2f}")
@@ -223,7 +269,7 @@ def main():
             "number of hunts won",
             "number of hunts participated"
         ]
-        for metric_def in METRICS_TO_TRACK:
+        for metric_def in unique_metrics:
             header.append(metric_def["total_label"])
             header.append(metric_def["average_label"])
         header.append("detailed breakdown")
